@@ -1,0 +1,19 @@
+ Güvenli Kaynak Yönetimi
+Try-with-Resources: PDF belgesi oluşturma ,
+süreci, try (PDDocument document = new PDDocument()) bloğu ile sarılmıştır. Bu yapı, kaynak sızıntılarını önleyerek belgenin kaydetme (save) işleminden sonra otomatik ve güvenli bir şekilde kapatılmasını garanti eder.
+
+Resim Yükleme (Classpath): Resim dosyası (nazli_gursoy.png), dosya yolu bağımlılığını ortadan kaldırmak için getResourceAsStream() metoduyla Classpath (özellikle resources klasörü) üzerinden okunur. Bu yaklaşım, uygulamanın JAR olarak dağıtılmasına imkan tanır.
+
+Buffer Yönetimi: Büyük dosyalarda güvenilirlik sağlamak için InputStream okuma işlemi, ByteArrayOutputStream kullanılarak parçalar halinde yapılır ve resim verisi (byte array) bellekte güvenli bir şekilde toplanır.
+
+2.2. PDF Çizim Mekanizması
+Koordinat Sistemi: Tüm içerikler, sol alt köşeyi (0, 0) kabul eden PDF koordinat sisteminde PDPageContentStream üzerine çizilir. İçerikler arası boşluklar ve konumlandırma, yPos değişkeninin dinamik olarak azaltılmasıyla yönetilir.
+
+Metin Akışı: Metinler, beginText() ile başlatılır, setFont() ile biçimlendirilir ve newLineAtOffset(0, -15) gibi komutlarla satır atlama işlemi yapılır. Bu -15 değeri, satır yüksekliğini (leading) kontrol eder.
+
+Görsel Gömme: PDImageXObject.createFromByteArray() metodu ile byte dizisine çevrilen resim, content.drawImage() kullanılarak belirli X-Y koordinatlarına yerleştirilir.
+
+2.3. Hata ve Kısıtlamalar
+Hata Yönetimi: Koddaki kritik I/O işlemlerinde oluşabilecek hatalar, programın anında ve güvenli bir şekilde durdurulması için System.err.println ile standart hata akışına yazılır.
+
+Karakter Kısıtlaması: Performans ve uyumluluk nedeniyle kullanılan standart Base 14 Fontları (PDType1Font.HELVETICA), Türkçe karakterleri (Ö, İ, Ç, Ş, Ğ) desteklemez. Bu teknik kısıtlama nedeniyle metinler Türkçe karakter içermeyen karşılıklarıyla yazılmıştır.
